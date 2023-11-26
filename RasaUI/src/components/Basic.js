@@ -36,8 +36,15 @@ function Basic(){
       return () => clearInterval(interval);
     }, []);
 
-    
-
+    useEffect(() => {
+        var addScript = document.createElement("script");
+        addScript.setAttribute(
+          "src",
+          "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"
+        );
+        document.body.appendChild(addScript);
+        window.googleTranslateElementInit = googleTranslateElementInit;
+      }, []);
 
     const handleSubmit=(evt)=>{
         evt.preventDefault();
@@ -59,6 +66,16 @@ function Basic(){
         
     }
 
+    const googleTranslateElementInit = () => {
+        new window.google.translate.TranslateElement(
+          {
+            pageLanguage: "en",
+            autoDisplay: false,
+            multilanguagePage: true,
+          },
+          "google_translate_element"
+        );
+      };
 
     const rasaAPI = async function handleClick(name,msg) {
     
@@ -130,7 +147,7 @@ function Basic(){
     return (
       <div>
         {/* <button onClick={()=>rasaAPI("shreyas","hi")}>Try this</button> */}
-        
+        <div id="google_translate_element"></div>
 
         <div className="container">
         <div className="row justify-content-center">
@@ -150,11 +167,11 @@ function Basic(){
                                 <div key={key}>
                                     {user.sender==='bot' ?
                                         (
-                                            
+
                                             <div className= 'msgalignstart'>
                                                 <BiBot className="botIcon"  /><h5 className="botmsg">{user.msg}</h5>
                                             </div>
-                                        
+                                            
                                         )
 
                                         :(
