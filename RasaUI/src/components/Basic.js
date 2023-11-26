@@ -1,5 +1,5 @@
 import './chatBot.css';
-import react, { useEffect, useState } from 'react';
+import react, { useEffect, useState, useRef } from 'react';
 import {IoMdSend}  from 'react-icons/io';
 import {BiBot,BiUser} from 'react-icons/bi';
 
@@ -7,6 +7,7 @@ function Basic(){
     const [chat,setChat] = useState([]);
     const [inputMessage,setInputMessage] = useState('');
     const [botTyping,setbotTyping] = useState(false);
+    const lastUserActivity = useRef(new Date());
 
     
    useEffect(()=>{
@@ -18,6 +19,23 @@ function Basic(){
     
     },[chat])
 
+    useEffect(() => {
+      // Check for user inactivity every second
+      const interval = setInterval(() => {
+        const currentTime = new Date();
+        const timeSinceLastUserActivity = (currentTime - lastUserActivity.current) / 1000; // Convert to seconds
+
+        // If the user has been inactive for a minute, send a message
+        if (timeSinceLastUserActivity >= 600) {
+          rasaAPI("shreyas","logout");
+          // User provides input, update the last activity time
+          lastUserActivity.current = new Date();
+        }
+      }, 1000);
+
+      return () => clearInterval(interval);
+    }, []);
+
     
 
 
@@ -27,6 +45,8 @@ function Basic(){
         const request_temp = {sender : "user", sender_id : name , msg : inputMessage};
         
         if(inputMessage !== ""){
+            // User provides input, update the last activity time
+            lastUserActivity.current = new Date();
             
             setChat(chat => [...chat, request_temp]);
             setbotTyping(true);
